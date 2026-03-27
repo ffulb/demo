@@ -5,518 +5,463 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MODA Marketing KPI System — Demo</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Google Sans', Arial, sans-serif; background: #f8f9fa; overflow: hidden; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Google Sans',Roboto,Arial,sans-serif;background:#fff;overflow-x:hidden;}
 
-  /* === Google Sheets chrome === */
-  .sheet-container { width: 960px; margin: 0 auto; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.12); min-height: 100vh; }
-  .toolbar { background: #f1f3f4; border-bottom: 1px solid #dadce0; height: 36px; display: flex; align-items: center; padding: 0 12px; gap: 8px; }
-  .toolbar .title { font-size: 14px; font-weight: 500; color: #202124; }
-  .toolbar .pill { font-size: 11px; background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 10px; }
+/* Google Sheets top bar */
+.gs-topbar{height:40px;background:#fff;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #dadce0;}
+.gs-icon{width:28px;height:28px;margin-right:8px;}
+.gs-icon svg{width:28px;height:28px;}
+.gs-title{font-size:17px;color:#202124;font-weight:400;}
 
-  /* === Tab bar === */
-  .tab-bar { display: flex; background: #f1f3f4; border-top: 1px solid #dadce0; height: 32px; align-items: flex-end; padding: 0 8px; position: fixed; bottom: 0; width: 960px; z-index: 100; }
-  .tab { padding: 6px 16px; font-size: 12px; color: #5f6368; border: 1px solid #dadce0; border-bottom: none; border-radius: 4px 4px 0 0; cursor: default; margin-right: 2px; background: #f1f3f4; transition: all .3s; white-space: nowrap; }
-  .tab.active { background: #fff; color: #202124; font-weight: 500; border-bottom: 2px solid #1a73e8; }
+/* Formula bar */
+.gs-formula{height:28px;background:#fff;display:flex;align-items:center;border-bottom:1px solid #e0e0e0;padding:0 0 0 0;font-size:12px;color:#202124;}
+.gs-namebox{width:80px;border-right:1px solid #e0e0e0;text-align:center;color:#444;height:100%;display:flex;align-items:center;justify-content:center;background:#fff;font-size:12px;}
+.gs-fx{padding:0 8px;color:#5f6368;font-style:italic;height:100%;display:flex;align-items:center;}
 
-  /* === Grid === */
-  .grid { border-collapse: collapse; width: 100%; }
-  .grid td, .grid th { border: 1px solid #e0e0e0; padding: 4px 8px; font-size: 12px; color: #202124; text-align: left; height: 24px; white-space: nowrap; }
-  .grid th { background: #f8f9fa; color: #5f6368; font-weight: 500; }
+/* Column headers */
+.gs-colhdr{display:flex;background:#f8f9fa;border-bottom:1px solid #e0e0e0;height:22px;padding-left:36px;}
+.gs-colhdr span{display:flex;align-items:center;justify-content:center;font-size:11px;color:#5f6368;border-right:1px solid #e0e0e0;flex-shrink:0;}
 
-  /* === Dashboard styles === */
-  .dash-header { background: #1a73e8; color: #fff; padding: 14px 20px; font-size: 18px; font-weight: 600; letter-spacing: .5px; display: flex; justify-content: space-between; align-items: center; }
-  .dash-header .contact { font-size: 11px; font-weight: 400; opacity: .85; }
-  .dash-sub { background: #e8f0fe; color: #1a73e8; padding: 6px 20px; font-size: 12px; }
-  .section-title { background: #f1f3f4; padding: 8px 20px; font-size: 13px; font-weight: 600; color: #202124; border-top: 2px solid #dadce0; margin-top: 4px; letter-spacing: .3px; }
-  .kpi-row { display: flex; gap: 16px; padding: 0 20px; }
-  .kpi-table { flex: 1; }
-  .kpi-table table { width: 100%; border-collapse: collapse; }
-  .kpi-table td { border: 1px solid #e0e0e0; padding: 5px 10px; font-size: 12px; height: 26px; }
-  .kpi-table .hdr { background: #f8f9fa; font-weight: 600; color: #5f6368; font-size: 11px; }
-  .status { text-align: center; font-size: 14px; }
-  .val { text-align: right; font-variant-numeric: tabular-nums; }
-  .kpi-name { min-width: 110px; }
+/* Main grid area */
+.gs-grid{position:relative;}
+.gs-row{display:flex;border-bottom:1px solid #e8eaed;min-height:24px;}
+.gs-rownum{width:36px;background:#f8f9fa;border-right:1px solid #e0e0e0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#5f6368;flex-shrink:0;}
+.gs-cell{border-right:1px solid #e8eaed;display:flex;align-items:center;padding:0 4px;font-size:13px;color:#202124;flex-shrink:0;overflow:hidden;white-space:nowrap;}
 
-  /* === Admin Input styles === */
-  .admin-header { background: #34a853; color: #fff; padding: 12px 20px; font-size: 16px; font-weight: 600; }
-  .admin-sub { background: #e6f4ea; color: #137333; padding: 6px 20px; font-size: 12px; }
-  .admin-table { margin: 0 20px; }
-  .admin-table table { border-collapse: collapse; width: calc(100% - 0px); }
-  .admin-table td, .admin-table th { border: 1px solid #e0e0e0; padding: 5px 8px; font-size: 12px; text-align: center; height: 26px; }
-  .admin-table th { background: #e6f4ea; color: #137333; font-weight: 600; font-size: 11px; }
-  .admin-table tr:nth-child(even) td { background: #fafafa; }
-  .typing-cell { position: relative; }
-  .cursor { display: inline-block; width: 1px; height: 14px; background: #202124; animation: blink .6s infinite; vertical-align: middle; margin-left: 1px; }
-  @keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
-  .cell-highlight { background: #d2e3fc !important; outline: 2px solid #1a73e8; }
+/* Merged header cells */
+.gs-merged{font-weight:700;}
+.gs-bg-blue{background:#1a73e8;color:#fff !important;}
+.gs-bg-lightblue{background:#d0e0fc;}
+.gs-bg-gray{background:#f1f3f4;}
+.gs-bg-green{background:#34a853;color:#fff !important;}
+.gs-bg-lightgreen{background:#d9ead3;}
+.gs-bg-red-alert{background:#fce8e6;color:#c5221f !important;}
+.gs-bg-green-alert{background:#e6f4ea;color:#137333 !important;}
+.gs-bold{font-weight:700;}
+.gs-center{justify-content:center;}
+.gs-right{justify-content:flex-end;}
+.gs-small{font-size:11px;}
+.gs-gray{color:#5f6368 !important;}
+.gs-section{font-weight:700;font-size:13px;}
 
-  /* === Chart === */
-  .chart-area { padding: 12px 20px; display: flex; gap: 16px; }
-  .chart-box { flex: 1; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; background: #fff; }
-  .chart-title { font-size: 12px; font-weight: 600; color: #202124; margin-bottom: 10px; text-align: center; }
-  .bar-chart { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 120px; padding-top: 8px; }
-  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-  .bar-pair { display: flex; gap: 2px; align-items: flex-end; height: 100px; }
-  .bar { width: 16px; border-radius: 2px 2px 0 0; transition: height 1.2s ease-out; }
-  .bar.target { background: #dadce0; }
-  .bar.actual { background: #1a73e8; }
-  .bar.green { background: #34a853; }
-  .bar.yellow { background: #fbbc04; }
-  .bar.red { background: #ea4335; }
-  .bar-label { font-size: 9px; color: #5f6368; text-align: center; max-width: 40px; line-height: 1.1; margin-top: 3px; }
-  .bar-val { font-size: 8px; color: #5f6368; text-align: center; min-height: 12px; }
-  .legend { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #5f6368; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+/* Status emoji */
+.gs-status{justify-content:center;font-size:14px;}
 
-  /* === Overlay label === */
-  .phase-label { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,.8); color: #fff; padding: 16px 32px; border-radius: 12px; font-size: 18px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity .4s; pointer-events: none; }
-  .phase-label.show { opacity: 1; }
+/* Tab bar */
+.gs-tabbar{position:fixed;bottom:0;left:0;right:0;height:30px;background:#f1f3f4;border-top:1px solid #dadce0;display:flex;align-items:flex-end;padding:0 40px;z-index:100;}
+.gs-tab{height:26px;padding:0 16px;font-size:12px;color:#5f6368;display:flex;align-items:center;border:1px solid #dadce0;border-bottom:none;border-radius:4px 4px 0 0;background:#f1f3f4;margin-right:1px;cursor:default;transition:all .2s;white-space:nowrap;}
+.gs-tab.active{background:#fff;color:#1a73e8;font-weight:500;border-bottom:2px solid #1a73e8;}
+.gs-tab .lock{font-size:10px;margin-left:3px;}
 
-  /* === Progress bar === */
-  .progress { position: fixed; top: 0; left: 0; width: 960px; margin: 0 auto; height: 3px; background: #e0e0e0; z-index: 300; }
-  .progress-bar { height: 100%; background: #1a73e8; transition: width .3s linear; width: 0%; }
+/* Cell highlight for typing */
+.gs-cell.typing{outline:2px solid #1a73e8;background:#e8f0fe;z-index:10;}
+.cursor{display:inline-block;width:1.5px;height:15px;background:#202124;animation:blink .53s infinite;vertical-align:middle;margin-left:0;}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 
-  /* Sheets wrapper */
-  .sheet-body { padding-bottom: 40px; }
+/* Phase overlay */
+.phase-overlay{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(32,33,36,.88);color:#fff;padding:10px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .35s;pointer-events:none;}
+.phase-overlay.show{opacity:1;}
 
-  /* View toggle */
-  .view { display: none; }
-  .view.active { display: block; }
+/* Replay */
+.replay-btn{position:fixed;bottom:45px;left:50%;transform:translateX(-50%);background:#1a73e8;color:#fff;border:none;padding:10px 28px;border-radius:24px;font-size:13px;font-weight:500;cursor:pointer;z-index:200;opacity:0;transition:opacity .3s;box-shadow:0 2px 8px rgba(26,115,232,.35);}
+.replay-btn:hover{background:#1557b0;}
+.replay-btn.show{opacity:1;}
 
-  /* Number animation */
-  .num-animate { transition: all .5s; }
+/* Scrollbar area padding */
+.gs-body{padding-bottom:36px;}
 
-  /* Alert section */
-  .alert-row { display: flex; align-items: center; gap: 8px; padding: 4px 20px; }
-  .alert-badge { background: #fce8e6; color: #c5221f; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
-  .alert-badge.ok { background: #e6f4ea; color: #137333; }
-
-  /* Replay button */
-  .replay-btn { position: fixed; bottom: 50px; right: calc(50% - 480px + 20px); background: #1a73e8; color: #fff; border: none; padding: 10px 24px; border-radius: 24px; font-size: 13px; font-weight: 500; cursor: pointer; z-index: 200; opacity: 0; transition: opacity .3s; box-shadow: 0 2px 8px rgba(26,115,232,.4); }
-  .replay-btn:hover { background: #1557b0; }
-  .replay-btn.show { opacity: 1; }
+/* Chart embedded in sheet */
+.gs-chart-overlay{position:absolute;right:20px;top:0;width:340px;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.1);padding:12px;z-index:50;opacity:0;transition:opacity .5s;}
+.gs-chart-overlay.show{opacity:1;}
+.chart-title{font-size:12px;font-weight:600;color:#202124;text-align:center;margin-bottom:10px;}
+.bar-chart{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:110px;}
+.bar-group{display:flex;flex-direction:column;align-items:center;}
+.bar-pair{display:flex;gap:2px;align-items:flex-end;height:90px;}
+.bar{width:14px;border-radius:2px 2px 0 0;transition:height 1s ease-out;}
+.bar-label{font-size:8px;color:#5f6368;text-align:center;margin-top:2px;max-width:38px;line-height:1.1;}
+.legend{display:flex;gap:10px;justify-content:center;margin-top:6px;}
+.legend span{font-size:9px;color:#5f6368;display:flex;align-items:center;gap:3px;}
+.legend i{width:8px;height:8px;border-radius:1px;display:inline-block;}
 </style>
 </head>
 <body>
-<div class="sheet-container" id="app">
-  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="title">📊 MODA Marketing KPI System</div>
-    <div class="pill">Auto-sync</div>
-  </div>
-
-  <!-- ====== DASHBOARD VIEW ====== -->
-  <div class="view active" id="viewDashboard">
-    <div class="dash-header">
-      <span>📊 MODA MARKETING KPI DASHBOARD</span>
-      <span class="contact">WhatsApp +66839077186</span>
-    </div>
-    <div class="dash-sub">Auto-updated from daily inputs</div>
-
-    <!-- TODAY -->
-    <div class="section-title">═══ TODAY ═══</div>
-    <div class="kpi-row">
-      <div class="kpi-table">
-        <table>
-          <tr><td class="hdr kpi-name">KPI</td><td class="hdr val">Target</td><td class="hdr val">Actual</td><td class="hdr status">Status</td></tr>
-          <tr><td class="kpi-name">Posts</td><td class="val">10</td><td class="val" id="k-posts">0</td><td class="status" id="s-posts">🔴</td></tr>
-          <tr><td class="kpi-name">Stories</td><td class="val">35</td><td class="val" id="k-stories">0</td><td class="status" id="s-stories">🔴</td></tr>
-          <tr><td class="kpi-name">Videos</td><td class="val">5</td><td class="val" id="k-videos">0</td><td class="status" id="s-videos">🔴</td></tr>
-          <tr><td class="kpi-name">Messages</td><td class="val">75</td><td class="val" id="k-messages">0</td><td class="status" id="s-messages">🔴</td></tr>
-          <tr><td class="kpi-name">Replies</td><td class="val">500</td><td class="val" id="k-replies">0</td><td class="status" id="s-replies">🔴</td></tr>
-          <tr><td class="kpi-name">Avg Response</td><td class="val">5 min</td><td class="val" id="k-avgres">0</td><td class="status" id="s-avgres">—</td></tr>
-        </table>
-      </div>
-      <div class="kpi-table">
-        <table>
-          <tr><td class="hdr kpi-name">KPI</td><td class="hdr val">Target</td><td class="hdr val">Actual</td><td class="hdr status">Status</td></tr>
-          <tr><td class="kpi-name">New Leads</td><td class="val">75</td><td class="val" id="k-leads">0</td><td class="status" id="s-leads">🔴</td></tr>
-          <tr><td class="kpi-name">Follow-ups</td><td class="val">125</td><td class="val" id="k-followups">0</td><td class="status" id="s-followups">🔴</td></tr>
-          <tr><td class="kpi-name">Meetings</td><td class="val">20</td><td class="val" id="k-meetings">0</td><td class="status" id="s-meetings">🔴</td></tr>
-          <tr><td class="kpi-name">Deals Closed</td><td class="val">—</td><td class="val" id="k-deals">0</td><td class="status">—</td></tr>
-          <tr><td class="kpi-name">Deal Value</td><td class="val">—</td><td class="val" id="k-dealval">$0</td><td class="status">—</td></tr>
-          <tr><td colspan="4" style="border:none;height:26px;"></td></tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- WEEKLY -->
-    <div class="section-title">═══ WEEKLY ═══</div>
-    <div style="padding:0 20px;">
-      <table class="kpi-table" style="width:50%;">
-        <tr><td class="hdr kpi-name">KPI</td><td class="hdr val">Target</td><td class="hdr val">Actual</td><td class="hdr status">Status</td></tr>
-        <tr><td class="kpi-name">Total Leads</td><td class="val">75</td><td class="val" id="k-wleads">0</td><td class="status" id="s-wleads">—</td></tr>
-        <tr><td class="kpi-name">Meetings</td><td class="val">22</td><td class="val" id="k-wmeet">0</td><td class="status" id="s-wmeet">—</td></tr>
-        <tr><td class="kpi-name">Lead→Meeting %</td><td class="val">30%</td><td class="val" id="k-wrate">0%</td><td class="status" id="s-wrate">—</td></tr>
-      </table>
-    </div>
-
-    <!-- Chart -->
-    <div class="chart-area">
-      <div class="chart-box">
-        <div class="chart-title">Today's KPI: Target vs Actual</div>
-        <div class="bar-chart" id="barChart">
-          <!-- Bars injected by JS -->
-        </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#dadce0;"></div> Target</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#1a73e8;"></div> Actual</div>
-        </div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">Per User Performance (Today)</div>
-        <div class="bar-chart" id="userChart">
-          <!-- User bars injected by JS -->
-        </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#1a73e8;"></div> Admin</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#34a853;"></div> User 1-4</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ALERTS -->
-    <div class="section-title">🚨 AUTO-RED ALERTS</div>
-    <div class="alert-row">
-      <span class="alert-badge" id="alert-posts">🔴 NO POSTS</span>
-      <span class="alert-badge" id="alert-leads">🔴 NO LEADS</span>
-      <span class="alert-badge" id="alert-msgs">🔴 NO MESSAGES</span>
-    </div>
-  </div>
-
-  <!-- ====== ADMIN INPUT VIEW ====== -->
-  <div class="view" id="viewAdmin">
-    <div class="admin-header">📝 DAILY INPUT — ADMIN</div>
-    <div class="admin-sub">Enter your daily numbers below. Dashboard updates automatically.</div>
-
-    <div class="section-title" style="background:#e6f4ea;color:#137333;border-color:#34a853;">═══ GENERAL / SALES ═══</div>
-    <div class="admin-table">
-      <table>
-        <tr>
-          <th>Date</th><th>Messages In</th><th>Replies Sent</th><th>Avg Resp (min)</th>
-          <th>New Leads</th><th>Follow-ups</th><th>Meetings</th><th>Deals</th><th>Deal Value ($)</th><th>Notes</th>
-        </tr>
-        <tr>
-          <td>3/24/2026</td><td>45</td><td>38</td><td>12</td>
-          <td>8</td><td>15</td><td>3</td><td>1</td><td>2,500</td><td style="text-align:left">Good day</td>
-        </tr>
-        <tr>
-          <td>3/25/2026</td><td>52</td><td>41</td><td>15</td>
-          <td>6</td><td>18</td><td>2</td><td>0</td><td>0</td><td style="text-align:left">Follow-ups focused</td>
-        </tr>
-        <tr>
-          <td>3/26/2026</td><td>38</td><td>30</td><td>10</td>
-          <td>10</td><td>12</td><td>4</td><td>2</td><td>4,800</td><td style="text-align:left">Two deals closed!</td>
-        </tr>
-        <tr id="newRow">
-          <td id="c0" class="typing-cell"></td>
-          <td id="c1" class="typing-cell"></td>
-          <td id="c2" class="typing-cell"></td>
-          <td id="c3" class="typing-cell"></td>
-          <td id="c4" class="typing-cell"></td>
-          <td id="c5" class="typing-cell"></td>
-          <td id="c6" class="typing-cell"></td>
-          <td id="c7" class="typing-cell"></td>
-          <td id="c8" class="typing-cell"></td>
-          <td id="c9" class="typing-cell" style="text-align:left"></td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- Tab bar -->
-  <div class="tab-bar">
-    <div class="tab active" id="tabDash">Dashboard</div>
-    <div class="tab" id="tabAdmin">Admin_Input</div>
-    <div class="tab">User1_Input</div>
-    <div class="tab">User2_Input</div>
-    <div class="tab">Social_Metrics</div>
-    <div class="tab">Targets</div>
-    <div class="tab">Data_Engine 🔒</div>
-  </div>
+<!-- Top bar -->
+<div class="gs-topbar">
+  <div class="gs-icon"><svg viewBox="0 0 48 48"><rect x="8" y="4" width="32" height="40" rx="3" fill="#0f9d58"/><rect x="13" y="10" width="22" height="28" rx="1" fill="#fff"/><rect x="16" y="14" width="6" height="3" fill="#57bb8a"/><rect x="24" y="14" width="8" height="3" fill="#e0e0e0"/><rect x="16" y="19" width="6" height="3" fill="#57bb8a"/><rect x="24" y="19" width="8" height="3" fill="#e0e0e0"/><rect x="16" y="24" width="6" height="3" fill="#57bb8a"/><rect x="24" y="24" width="8" height="3" fill="#e0e0e0"/><rect x="16" y="29" width="6" height="3" fill="#57bb8a"/><rect x="24" y="29" width="8" height="3" fill="#e0e0e0"/></svg></div>
+  <div class="gs-title">MODA Marketing KPI System</div>
 </div>
 
-<div class="phase-label" id="phaseLabel"></div>
-<button class="replay-btn" id="replayBtn" onclick="startDemo()">▶ Replay Demo</button>
+<!-- Formula bar -->
+<div class="gs-formula">
+  <div class="gs-namebox" id="nameBox">A1</div>
+  <div class="gs-fx"><i>fx</i></div>
+</div>
+
+<!-- Sheet body -->
+<div class="gs-body" id="sheetBody"></div>
+
+<!-- Tab bar -->
+<div class="gs-tabbar">
+  <div class="gs-tab active" id="tabDash">Dashboard</div>
+  <div class="gs-tab" id="tabAdmin">Admin_Input</div>
+  <div class="gs-tab" id="tabU1">User1_Input</div>
+  <div class="gs-tab" id="tabU2">User2_Input</div>
+  <div class="gs-tab" id="tabSoc">Social_Metrics</div>
+  <div class="gs-tab" id="tabTgt">Targets</div>
+  <div class="gs-tab" id="tabDE">Data_Engine <span class="lock">🔒</span></div>
+</div>
+
+<div class="phase-overlay" id="phaseLabel"></div>
+<button class="replay-btn" id="replayBtn" onclick="startDemo()">&#9654; Replay</button>
 
 <script>
-// ── Data ──
-const newRowData = ['3/27/2026','42','35','15','7','12','15','3','1','5,000','Good progress!'];
-const kpiAfter = {
-  'k-posts':42, 'k-stories':0, 'k-videos':0, 'k-messages':42, 'k-replies':35, 'k-avgres':15,
-  'k-leads':7, 'k-followups':12, 'k-meetings':3, 'k-deals':1, 'k-dealval':5000,
-  'k-wleads':31, 'k-wmeet':12, 'k-wrate':39
-};
-const statusAfter = {
-  's-posts':'🟢','s-stories':'🔴','s-videos':'🔴','s-messages':'🟡','s-replies':'🔴','s-avgres':'—',
-  's-leads':'🔴','s-followups':'🔴','s-meetings':'🟡','s-wleads':'🟡','s-wmeet':'🟡','s-wrate':'🟢'
-};
+// Column widths (px) - mimic real sheet proportions
+const COL_W = [130, 75, 65, 55, 12, 110, 75, 65, 55, 12, 12, 130];
+const COL_W_ADMIN = [90, 90, 85, 105, 80, 85, 100, 80, 95, 130, 12, 12];
+const COL_LETTERS = 'A B C D E F G H I J K L'.split(' ');
 
-// Bar chart data
-const barData = [
-  {label:'Posts',target:10,actual:42},
-  {label:'Msgs',target:75,actual:42},
-  {label:'Replies',target:500,actual:35},
-  {label:'Leads',target:75,actual:7},
-  {label:'Follow',target:125,actual:12},
-  {label:'Meets',target:20,actual:3}
-];
+// Dashboard data — rows as arrays of {text, cls}
+// cls: classes to add (space separated)
+function dashData(vals) {
+  const v = vals || {};
+  const a = (k)=> v[k] !== undefined ? v[k] : '0';
+  const s = (k)=> v['s_'+k] || '🔴';
+  return [
+    // Row 1: Title
+    [{text:'📊 MODA MARKETING KPI DASHBOARD',cls:'gs-merged gs-bg-blue',span:11},{text:'Whatsapp +66839077186',cls:'gs-bg-blue gs-small gs-right'}],
+    // Row 2: Subtitle
+    [{text:'Auto-updated from daily inputs',cls:'gs-bg-lightblue gs-small',span:12}],
+    // Row 3: empty
+    [{text:'',span:12}],
+    // Row 4: TODAY section header
+    [{text:'═══ TODAY ═══',cls:'gs-section gs-bg-gray',span:12}],
+    // Row 5: Column headers
+    [{text:'KPI',cls:'gs-bold gs-bg-gray'},{text:'Target',cls:'gs-bold gs-bg-gray gs-center'},{text:'Actual',cls:'gs-bold gs-bg-gray gs-center'},{text:'Status',cls:'gs-bold gs-bg-gray gs-center'},{text:''}, {text:'KPI',cls:'gs-bold gs-bg-gray'},{text:'Target',cls:'gs-bold gs-bg-gray gs-center'},{text:'Actual',cls:'gs-bold gs-bg-gray gs-center'},{text:'Status',cls:'gs-bold gs-bg-gray gs-center'},{text:''},{text:''},{text:''}],
+    // Row 6: Posts / New Leads
+    [{text:'Posts'},{text:'10',cls:'gs-center'},{text:a('posts'),cls:'gs-center',id:'v-posts'},{text:s('posts'),cls:'gs-status',id:'s-posts'},{text:''}, {text:'New Leads'},{text:'75',cls:'gs-center'},{text:a('leads'),cls:'gs-center',id:'v-leads'},{text:s('leads'),cls:'gs-status',id:'s-leads'},{text:''},{text:''},{text:''}],
+    // Row 7: Stories / Follow-ups
+    [{text:'Stories'},{text:'35',cls:'gs-center'},{text:a('stories'),cls:'gs-center',id:'v-stories'},{text:s('stories'),cls:'gs-status',id:'s-stories'},{text:''}, {text:'Follow-ups'},{text:'125',cls:'gs-center'},{text:a('followups'),cls:'gs-center',id:'v-followups'},{text:s('followups'),cls:'gs-status',id:'s-followups'},{text:''},{text:''},{text:''}],
+    // Row 8: Videos / Meetings
+    [{text:'Videos'},{text:'5',cls:'gs-center'},{text:a('videos'),cls:'gs-center',id:'v-videos'},{text:s('videos'),cls:'gs-status',id:'s-videos'},{text:''}, {text:'Meetings'},{text:'20',cls:'gs-center'},{text:a('meetings'),cls:'gs-center',id:'v-meetings'},{text:s('meetings'),cls:'gs-status',id:'s-meetings'},{text:''},{text:''},{text:''}],
+    // Row 9: Messages / Deals Closed
+    [{text:'Messages'},{text:'75',cls:'gs-center'},{text:a('messages'),cls:'gs-center',id:'v-messages'},{text:s('messages'),cls:'gs-status',id:'s-messages'},{text:''}, {text:'Deals Closed'},{text:'—',cls:'gs-center gs-gray'},{text:a('deals'),cls:'gs-center',id:'v-deals'},{text:'—',cls:'gs-status gs-gray'},{text:''},{text:''},{text:''}],
+    // Row 10: Replies / Deal Value
+    [{text:'Replies'},{text:'500',cls:'gs-center'},{text:a('replies'),cls:'gs-center',id:'v-replies'},{text:s('replies'),cls:'gs-status',id:'s-replies'},{text:''}, {text:'Deal Value'},{text:'—',cls:'gs-center gs-gray'},{text:a('dealval'),cls:'gs-center',id:'v-dealval'},{text:'—',cls:'gs-status gs-gray'},{text:''},{text:''},{text:''}],
+    // Row 11: Avg Response
+    [{text:'Avg Response Time'},{text:'5 min',cls:'gs-center'},{text:a('avgres'),cls:'gs-center',id:'v-avgres'},{text:'—',cls:'gs-status gs-gray'},{text:''}, {text:''},{text:''},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    // Row 12: empty
+    [{text:'',span:12}],
+    // Row 13: WEEKLY
+    [{text:'═══ WEEKLY ═══',cls:'gs-section gs-bg-gray',span:12}],
+    // Row 14: headers
+    [{text:'KPI',cls:'gs-bold gs-bg-gray'},{text:'Target',cls:'gs-bold gs-bg-gray gs-center'},{text:'Actual',cls:'gs-bold gs-bg-gray gs-center'},{text:'Status',cls:'gs-bold gs-bg-gray gs-center'},{text:'',span:8}],
+    // Row 15-17
+    [{text:'Total Leads'},{text:'75',cls:'gs-center'},{text:a('wleads'),cls:'gs-center',id:'v-wleads'},{text:'—',cls:'gs-status gs-gray'},{text:'',span:8}],
+    [{text:'Meetings'},{text:'22',cls:'gs-center'},{text:a('wmeet'),cls:'gs-center',id:'v-wmeet'},{text:'—',cls:'gs-status gs-gray'},{text:'',span:8}],
+    [{text:'Lead→Meeting Rate'},{text:'30%',cls:'gs-center'},{text:a('wrate'),cls:'gs-center',id:'v-wrate'},{text:'—',cls:'gs-status gs-gray'},{text:'',span:8}],
+    // Row 18: empty
+    [{text:'',span:12}],
+    // Row 19: ALERTS
+    [{text:'🚨 AUTO-RED ALERTS',cls:'gs-section gs-bg-gray',span:12}],
+    [{text:'Condition',cls:'gs-bold gs-bg-gray'},{text:'Status',cls:'gs-bold gs-bg-gray',span:2},{text:'',span:9}],
+    [{text:'No posts today'},{text:v.alertPosts||'🔴 NO POSTS',cls:(v.alertPostsOk?'gs-bg-green-alert':'gs-bg-red-alert'),span:2,id:'a-posts'},{text:'',span:9}],
+    [{text:'No leads today'},{text:v.alertLeads||'🔴 NO LEADS',cls:(v.alertLeadsOk?'gs-bg-green-alert':'gs-bg-red-alert'),span:2,id:'a-leads'},{text:'',span:9}],
+    [{text:'No follow-ups today'},{text:v.alertFollow||'🔴 NO FOLLOW-UPS',cls:(v.alertFollowOk?'gs-bg-green-alert':'gs-bg-red-alert'),span:2,id:'a-follow'},{text:'',span:9}],
+  ];
+}
 
-// ── Helpers ──
+function adminData(){
+  return [
+    [{text:'DAILY INPUT — ADMIN',cls:'gs-merged gs-bg-green gs-bold',span:12}],
+    [{text:'Enter your daily numbers in each platform section below.',cls:'gs-bg-lightgreen gs-small',span:12}],
+    [{text:'',span:12}],
+    [{text:'═══ GENERAL / SALES ═══',cls:'gs-section gs-bg-lightgreen',span:12}],
+    // Header row
+    [{text:'Date',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Messages In',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Replies Sent',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Avg Response (min)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'New Leads',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Follow-ups',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Meetings Booked',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Deals Closed',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Deal Value ($)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Notes',cls:'gs-bold gs-bg-lightgreen'},{text:''},{text:''}],
+    // Existing data rows
+    [{text:'3/24/2026',cls:'gs-center'},{text:'45',cls:'gs-center'},{text:'38',cls:'gs-center'},{text:'12',cls:'gs-center'},{text:'8',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'3',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'2,500',cls:'gs-center'},{text:'Good day'},{text:''},{text:''}],
+    [{text:'3/25/2026',cls:'gs-center'},{text:'52',cls:'gs-center'},{text:'41',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'6',cls:'gs-center'},{text:'18',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'0',cls:'gs-center'},{text:'0',cls:'gs-center'},{text:'Follow-ups focused'},{text:''},{text:''}],
+    [{text:'3/26/2026',cls:'gs-center'},{text:'38',cls:'gs-center'},{text:'30',cls:'gs-center'},{text:'10',cls:'gs-center'},{text:'10',cls:'gs-center'},{text:'12',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'4,800',cls:'gs-center'},{text:'Two deals closed!'},{text:''},{text:''}],
+    // Empty new row (for typing)
+    [{text:'',cls:'gs-center',id:'tc-0'},{text:'',cls:'gs-center',id:'tc-1'},{text:'',cls:'gs-center',id:'tc-2'},{text:'',cls:'gs-center',id:'tc-3'},{text:'',cls:'gs-center',id:'tc-4'},{text:'',cls:'gs-center',id:'tc-5'},{text:'',cls:'gs-center',id:'tc-6'},{text:'',cls:'gs-center',id:'tc-7'},{text:'',cls:'gs-center',id:'tc-8'},{text:'',id:'tc-9'},{text:''},{text:''}],
+    // A few empty rows for authenticity
+    [{text:'',span:12}],
+    [{text:'',span:12}],
+    [{text:'',span:12}],
+  ];
+}
+
+function renderSheet(rows, colWidths, startRow){
+  const body = document.getElementById('sheetBody');
+  body.innerHTML = '';
+
+  // Column headers
+  const colHdr = document.createElement('div');
+  colHdr.className = 'gs-colhdr';
+  colWidths.forEach((w,i)=>{
+    const s = document.createElement('span');
+    s.style.width = w+'px';
+    s.textContent = COL_LETTERS[i]||'';
+    colHdr.appendChild(s);
+  });
+  body.appendChild(colHdr);
+
+  // Rows
+  rows.forEach((row, ri)=>{
+    const rowEl = document.createElement('div');
+    rowEl.className = 'gs-row';
+
+    const rn = document.createElement('div');
+    rn.className = 'gs-rownum';
+    rn.textContent = (startRow||1) + ri;
+    rowEl.appendChild(rn);
+
+    let ci = 0;
+    row.forEach(cell=>{
+      const cellEl = document.createElement('div');
+      cellEl.className = 'gs-cell' + (cell.cls ? ' '+cell.cls : '');
+      const spanCount = cell.span || 1;
+      let totalW = 0;
+      for(let s=0; s<spanCount && (ci+s)<colWidths.length; s++){
+        totalW += colWidths[ci+s];
+      }
+      cellEl.style.width = totalW + 'px';
+      cellEl.textContent = cell.text;
+      if(cell.id) cellEl.id = cell.id;
+      rowEl.appendChild(cellEl);
+      ci += spanCount;
+    });
+
+    // Fill remaining cols
+    while(ci < colWidths.length){
+      const cellEl = document.createElement('div');
+      cellEl.className = 'gs-cell';
+      cellEl.style.width = colWidths[ci]+'px';
+      ci++;
+      rowEl.appendChild(cellEl);
+    }
+
+    body.appendChild(rowEl);
+  });
+}
+
+// ── Animation helpers ──
 function $(id){ return document.getElementById(id); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-function showPhase(text, duration){
+function showPhase(text){
   const el = $('phaseLabel');
   el.textContent = text;
   el.classList.add('show');
-  return sleep(duration || 1500).then(()=> el.classList.remove('show'));
+}
+function hidePhase(){
+  $('phaseLabel').classList.remove('show');
 }
 
-function switchTab(tabName){
-  document.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'));
-  document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
-  if(tabName==='dashboard'){
-    $('tabDash').classList.add('active');
-    $('viewDashboard').classList.add('active');
-  } else {
-    $('tabAdmin').classList.add('active');
-    $('viewAdmin').classList.add('active');
-  }
+function switchTab(name){
+  document.querySelectorAll('.gs-tab').forEach(t=>t.classList.remove('active'));
+  if(name==='dashboard') $('tabDash').classList.add('active');
+  else $('tabAdmin').classList.add('active');
 }
 
-async function typeInCell(cellId, text, delay){
-  const cell = $(cellId);
-  cell.classList.add('cell-highlight');
+async function typeInCell(id, text, delay){
+  const cell = $(id);
+  if(!cell) return;
+  cell.classList.add('typing');
   cell.innerHTML = '<span class="cursor"></span>';
-  await sleep(300);
+  // Update namebox
+  const colIdx = parseInt(id.split('-')[1]);
+  $('nameBox').textContent = COL_LETTERS[colIdx] + '9';
+  await sleep(250);
   for(let i=0; i<text.length; i++){
     cell.innerHTML = text.substring(0,i+1) + '<span class="cursor"></span>';
-    await sleep(delay || 60);
+    await sleep(delay||55);
   }
   await sleep(200);
-  cell.innerHTML = text;
-  cell.classList.remove('cell-highlight');
+  cell.textContent = text;
+  cell.classList.remove('typing');
 }
 
-function animateNumber(id, target, duration){
+function animateVal(id, target, prefix, suffix, duration){
   const el = $(id);
   if(!el) return;
-  const start = 0;
   const startTime = performance.now();
-  const prefix = id === 'k-dealval' ? '$' : '';
-  const suffix = id === 'k-wrate' ? '%' : '';
-
-  function update(now){
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-    const current = Math.round(start + (target - start) * eased);
-    if(prefix === '$'){
-      el.textContent = '$' + current.toLocaleString();
-    } else {
-      el.textContent = current + suffix;
-    }
-    if(progress < 1) requestAnimationFrame(update);
+  function tick(now){
+    const p = Math.min((now-startTime)/duration, 1);
+    const eased = 1 - Math.pow(1-p, 3);
+    const cur = Math.round(target * eased);
+    el.textContent = (prefix||'') + cur.toLocaleString() + (suffix||'');
+    if(p<1) requestAnimationFrame(tick);
   }
-  requestAnimationFrame(update);
+  requestAnimationFrame(tick);
 }
 
-function buildBars(animated){
-  const container = $('barChart');
-  container.innerHTML = '';
-  const maxVal = Math.max(...barData.map(d=> Math.max(d.target, d.actual)));
+// ── Chart ──
+function buildChart(animated){
+  // Remove old
+  let old = document.querySelector('.gs-chart-overlay');
+  if(old) old.remove();
 
-  barData.forEach(d=>{
-    const group = document.createElement('div');
-    group.className = 'bar-group';
+  const chart = document.createElement('div');
+  chart.className = 'gs-chart-overlay' + (animated ? ' show' : '');
+  chart.innerHTML = '<div class="chart-title">Today\'s KPI: Target vs Actual</div>';
 
-    const valDiv = document.createElement('div');
-    valDiv.className = 'bar-val';
-    valDiv.textContent = animated ? d.actual : '';
+  const barArea = document.createElement('div');
+  barArea.className = 'bar-chart';
 
-    const pair = document.createElement('div');
-    pair.className = 'bar-pair';
+  const data = [
+    {l:'Posts',t:10,a:42},{l:'Msgs',t:75,a:42},{l:'Replies',t:500,a:35},
+    {l:'Leads',t:75,a:7},{l:'Follow',t:125,a:12},{l:'Meets',t:20,a:3}
+  ];
+  const maxV = 500;
 
-    const tBar = document.createElement('div');
-    tBar.className = 'bar target';
-    tBar.style.height = (d.target/maxVal*90) + 'px';
-
-    const aBar = document.createElement('div');
-    aBar.className = 'bar actual';
-    if(animated){
-      const pct = d.actual / d.target;
-      aBar.classList.add(pct >= 1 ? 'green' : pct >= 0.15 ? 'yellow' : 'red');
-      aBar.style.height = '0px';
-      setTimeout(()=>{ aBar.style.height = (d.actual/maxVal*90) + 'px'; }, 100);
-    } else {
-      aBar.style.height = '0px';
-    }
-
-    pair.appendChild(tBar);
-    pair.appendChild(aBar);
-
-    const label = document.createElement('div');
-    label.className = 'bar-label';
-    label.textContent = d.label;
-
-    group.appendChild(valDiv);
-    group.appendChild(pair);
-    group.appendChild(label);
-    container.appendChild(group);
-  });
-
-  // User chart
-  const uc = $('userChart');
-  uc.innerHTML = '';
-  const users = ['Admin','User 1','User 2','User 3','User 4'];
-  const userScores = animated ? [42,0,0,0,0] : [0,0,0,0,0];
-  users.forEach((u,i)=>{
+  data.forEach(d=>{
     const g = document.createElement('div');
     g.className = 'bar-group';
-    const v = document.createElement('div');
-    v.className = 'bar-val';
-    v.textContent = userScores[i] || '';
     const p = document.createElement('div');
     p.className = 'bar-pair';
-    const b = document.createElement('div');
-    b.className = 'bar';
-    b.style.background = i===0 ? '#1a73e8' : '#34a853';
-    b.style.width = '24px';
-    if(animated && userScores[i]){
-      b.style.height = '0px';
-      setTimeout(()=>{ b.style.height = (userScores[i]/50*90) + 'px'; }, 200);
+
+    const tb = document.createElement('div');
+    tb.className = 'bar';
+    tb.style.background = '#dadce0';
+    tb.style.height = (d.t/maxV*85)+'px';
+    tb.style.width = '12px';
+
+    const ab = document.createElement('div');
+    ab.className = 'bar';
+    const pct = d.a/d.t;
+    ab.style.background = pct>=1?'#34a853':pct>=0.1?'#fbbc04':'#ea4335';
+    ab.style.width = '12px';
+    if(animated){
+      ab.style.height = '0px';
+      setTimeout(()=>{ab.style.height=(d.a/maxV*85)+'px';},150);
     } else {
-      b.style.height = '2px';
+      ab.style.height = '0px';
     }
-    p.appendChild(b);
-    const l = document.createElement('div');
-    l.className = 'bar-label';
-    l.textContent = u;
-    g.appendChild(v);
-    g.appendChild(p);
-    g.appendChild(l);
-    uc.appendChild(g);
-  });
-}
 
-function resetDashboard(){
-  Object.keys(kpiAfter).forEach(id=>{
-    const el = $(id);
-    if(el){
-      if(id==='k-dealval') el.textContent='$0';
-      else if(id==='k-wrate') el.textContent='0%';
-      else el.textContent='0';
-    }
+    p.appendChild(tb); p.appendChild(ab);
+    const lb = document.createElement('div');
+    lb.className = 'bar-label';
+    lb.textContent = d.l;
+    g.appendChild(p); g.appendChild(lb);
+    barArea.appendChild(g);
   });
-  Object.keys(statusAfter).forEach(id=>{
-    const el = $(id);
-    if(el) el.textContent = '🔴';
-  });
-  // Reset specific statuses
-  $('s-avgres').textContent = '—';
-  $('alert-posts').className = 'alert-badge';
-  $('alert-posts').textContent = '🔴 NO POSTS';
-  $('alert-leads').className = 'alert-badge';
-  $('alert-leads').textContent = '🔴 NO LEADS';
-  $('alert-msgs').className = 'alert-badge';
-  $('alert-msgs').textContent = '🔴 NO MESSAGES';
-  buildBars(false);
-}
 
-function resetAdminRow(){
-  for(let i=0; i<=9; i++){
-    const el = $('c'+i);
-    if(el){ el.innerHTML = ''; el.classList.remove('cell-highlight'); }
+  chart.appendChild(barArea);
+  chart.innerHTML += '<div class="legend"><span><i style="background:#dadce0"></i> Target</span><span><i style="background:#1a73e8"></i> Actual</span></div>';
+
+  // Position it relative to sheet body
+  const body = $('sheetBody');
+  body.style.position = 'relative';
+  chart.style.top = '90px';
+  body.appendChild(chart);
+
+  if(!animated){
+    setTimeout(()=>chart.classList.add('show'),100);
   }
 }
 
-function updateProgress(pct){
-  $('progressBar').style.width = pct + '%';
-}
-
-// ── Main Demo ──
+// ── Demo flow ──
 async function startDemo(){
   $('replayBtn').classList.remove('show');
-  resetDashboard();
-  resetAdminRow();
+
+  // Phase 1: Dashboard with zeros
   switchTab('dashboard');
-  updateProgress(0);
-
-  // Phase 1: Show empty dashboard
-  await showPhase('📊 Dashboard — All KPIs at zero', 2000);
-  await sleep(2500);
-  updateProgress(15);
-
-  // Phase 2: Switch to Admin Input
-  await showPhase('📝 Switch to Admin Input...', 1200);
-  await sleep(400);
-  switchTab('admin');
-  await sleep(1500);
-  updateProgress(25);
-
-  // Phase 3: Type data
-  await showPhase('⌨️ Entering today\'s data...', 1200);
-  await sleep(500);
-
-  const cellData = newRowData;
-  const delays = [50, 50, 50, 50, 50, 50, 50, 50, 50, 40];
-  for(let i=0; i<cellData.length; i++){
-    await typeInCell('c'+i, cellData[i], delays[i]);
-    updateProgress(25 + (i/cellData.length)*35);
-    await sleep(150);
-  }
-
-  await sleep(800);
-  updateProgress(65);
-
-  // Phase 4: Switch back to dashboard
-  await showPhase('📊 Dashboard auto-updates!', 1500);
-  await sleep(500);
-  switchTab('dashboard');
-  await sleep(800);
-  updateProgress(75);
-
-  // Phase 5: Animate numbers
-  Object.keys(kpiAfter).forEach(id=>{
-    animateNumber(id, kpiAfter[id], 1500);
-  });
-
-  // Animate statuses with delay
-  await sleep(600);
-  Object.keys(statusAfter).forEach(id=>{
-    const el = $(id);
-    if(el) el.textContent = statusAfter[id];
-  });
-
-  // Update alerts
-  $('alert-posts').className = 'alert-badge ok';
-  $('alert-posts').textContent = '✅ Posts OK';
-  $('alert-leads').className = 'alert-badge ok';
-  $('alert-leads').textContent = '✅ Leads OK';
-  $('alert-msgs').className = 'alert-badge ok';
-  $('alert-msgs').textContent = '✅ Messages OK';
-
-  // Animate bars
-  buildBars(true);
-  updateProgress(95);
-
-  await sleep(2500);
-  updateProgress(100);
-
+  renderSheet(dashData(), COL_W, 1);
+  buildChart(false);
+  showPhase('Step 1: Dashboard shows all KPIs at zero');
+  await sleep(3500);
+  hidePhase();
   await sleep(1000);
+
+  // Phase 2: Switch to Admin_Input
+  showPhase('Step 2: Open Admin_Input tab to enter data');
+  await sleep(1800);
+  hidePhase();
+  switchTab('admin');
+  renderSheet(adminData(), COL_W_ADMIN, 1);
+  $('nameBox').textContent = 'A5';
+  await sleep(1500);
+
+  // Phase 3: Type new row
+  showPhase('Step 3: Type today\'s numbers...');
+  await sleep(1200);
+  hidePhase();
+  await sleep(400);
+
+  const newData = ['3/27/2026','42','35','15','7','12','15','3','1','5,000'];
+  for(let i=0; i<newData.length; i++){
+    await typeInCell('tc-'+i, newData[i], 50);
+    await sleep(180);
+  }
+  // Notes column — type slower for effect
+  await typeInCell('tc-9', 'Good progress!', 40);
+  $('nameBox').textContent = 'J9';
+
+  await sleep(1200);
+
+  // Phase 4: Switch back to Dashboard
+  showPhase('Step 4: Dashboard auto-updates!');
+  await sleep(1500);
+  hidePhase();
+  switchTab('dashboard');
+
+  const afterVals = {
+    posts:'42', stories:'0', videos:'0', messages:'42', replies:'35', avgres:'15',
+    leads:'7', followups:'12', meetings:'3', deals:'1', dealval:'$5,000',
+    wleads:'31', wmeet:'12', wrate:'39%',
+    s_posts:'🟢', s_stories:'🔴', s_videos:'🔴', s_messages:'🟡', s_replies:'🔴',
+    s_leads:'🔴', s_followups:'🔴', s_meetings:'🟡',
+    alertPosts:'✅ Posts OK', alertPostsOk:true,
+    alertLeads:'✅ Leads OK', alertLeadsOk:true,
+    alertFollow:'✅ Follow-ups OK', alertFollowOk:true,
+  };
+
+  // First render with zeros, then animate
+  renderSheet(dashData(), COL_W, 1);
+  await sleep(600);
+
+  // Animate numbers counting up
+  const anims = [
+    {id:'v-posts',val:42},{id:'v-messages',val:42},{id:'v-replies',val:35},{id:'v-avgres',val:15},
+    {id:'v-leads',val:7},{id:'v-followups',val:12},{id:'v-meetings',val:3},{id:'v-deals',val:1},
+    {id:'v-wleads',val:31},{id:'v-wmeet',val:12}
+  ];
+  anims.forEach(a=> animateVal(a.id, a.val, '', '', 1200));
+  animateVal('v-dealval', 5000, '$', '', 1200);
+  animateVal('v-wrate', 39, '', '%', 1200);
+
+  // Status changes after a beat
+  await sleep(700);
+  const statusMap = {
+    's-posts':'🟢','s-stories':'🔴','s-videos':'🔴','s-messages':'🟡','s-replies':'🔴',
+    's-leads':'🔴','s-followups':'🔴','s-meetings':'🟡'
+  };
+  Object.entries(statusMap).forEach(([id,v])=>{
+    const el = $(id);
+    if(el) el.textContent = v;
+  });
+
+  // Alerts
+  await sleep(400);
+  const ap = $('a-posts');
+  if(ap){ap.textContent='✅ Posts OK';ap.className='gs-cell gs-bg-green-alert';ap.style.width=(COL_W[1]+COL_W[2])+'px';}
+  const al = $('a-leads');
+  if(al){al.textContent='✅ Leads OK';al.className='gs-cell gs-bg-green-alert';al.style.width=(COL_W[1]+COL_W[2])+'px';}
+  const af = $('a-follow');
+  if(af){af.textContent='✅ Follow-ups OK';af.className='gs-cell gs-bg-green-alert';af.style.width=(COL_W[1]+COL_W[2])+'px';}
+
+  // Chart
+  buildChart(true);
+
+  await sleep(3000);
   $('replayBtn').classList.add('show');
 }
 
-// Center the container
-document.querySelector('.sheet-container').style.margin = '0 auto';
-
 // Auto-start
-window.addEventListener('load', ()=> setTimeout(startDemo, 800));
+window.addEventListener('load',()=>setTimeout(startDemo,600));
 </script>
 </body>
 </html>
