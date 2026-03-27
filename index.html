@@ -212,6 +212,61 @@ function adminData(){
   ];
 }
 
+const COL_W_USER = [90, 90, 85, 105, 80, 85, 100, 80, 95, 130, 12, 12];
+function userInputData(){
+  return [
+    [{text:'DAILY INPUT — USER 1',cls:'gs-merged gs-bg-green gs-bold',span:12}],
+    [{text:'Enter your daily numbers below. Same format as Admin.',cls:'gs-bg-lightgreen gs-small',span:12}],
+    [{text:'',span:12}],
+    [{text:'═══ GENERAL / SALES ═══',cls:'gs-section gs-bg-lightgreen',span:12}],
+    [{text:'Date',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Messages In',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Replies Sent',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Avg Response (min)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'New Leads',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Follow-ups',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Meetings Booked',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Deals Closed',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Deal Value ($)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Notes',cls:'gs-bold gs-bg-lightgreen'},{text:''},{text:''}],
+    [{text:'3/24/2026',cls:'gs-center'},{text:'30',cls:'gs-center'},{text:'25',cls:'gs-center'},{text:'8',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:'10',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'0',cls:'gs-center'},{text:'0',cls:'gs-center'},{text:'Outreach day'},{text:''},{text:''}],
+    [{text:'3/25/2026',cls:'gs-center'},{text:'28',cls:'gs-center'},{text:'22',cls:'gs-center'},{text:'10',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'8',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'1,200',cls:'gs-center'},{text:'Small deal'},{text:''},{text:''}],
+    [{text:'',span:12}],
+    [{text:'',span:12}],
+    [{text:'',span:12}],
+  ];
+}
+
+const COL_W_SOCIAL = [90, 70, 70, 75, 70, 75, 65, 70, 75, 70, 80, 80];
+function socialMetricsData(){
+  return [
+    [{text:'📱 SOCIAL MEDIA METRICS',cls:'gs-merged gs-bold',span:12,cls:'gs-merged gs-bold gs-bg-blue'}],
+    [{text:'Track performance across all platforms',cls:'gs-bg-lightblue gs-small',span:12}],
+    [{text:'',span:12}],
+    [{text:'═══ FACEBOOK ═══',cls:'gs-section gs-bg-lightgreen',span:12}],
+    [{text:'Date',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Reels',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Stories',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Feed Posts',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Likes',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Comments',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Shares',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Reach',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Link Clicks',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Leads',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Ad Spend ($)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Notes',cls:'gs-bold gs-bg-lightgreen'}],
+    [{text:'3/24/2026',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'3',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'120',cls:'gs-center'},{text:'18',cls:'gs-center'},{text:'8',cls:'gs-center'},{text:'2,400',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:''}],
+    [{text:'3/25/2026',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'85',cls:'gs-center'},{text:'12',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:'1,800',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:''}],
+    [{text:'3/26/2026',cls:'gs-center'},{text:'3',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'210',cls:'gs-center'},{text:'32',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'4,500',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:'',cls:'gs-center'},{text:''}],
+    [{text:'',span:12}],
+    [{text:'═══ INSTAGRAM ═══',cls:'gs-section gs-bg-lightgreen',span:12}],
+    [{text:'Date',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Reels',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Stories',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Feed Posts',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Likes',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Comments',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Shares',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Reach',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Link Clicks',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Leads',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Ad Spend ($)',cls:'gs-bold gs-bg-lightgreen gs-center'},{text:'Notes',cls:'gs-bold gs-bg-lightgreen'}],
+    [{text:'',span:12}],
+    [{text:'',span:12}],
+  ];
+}
+
+const COL_W_TARGETS = [110, 120, 90, 70, 70, 70, 70, 12, 12, 12, 12, 12];
+function targetsData(){
+  return [
+    [{text:'🎯 MARKETING KPI TARGETS',cls:'gs-merged gs-bold gs-bg-blue',span:12}],
+    [{text:'Set by Admin — adjust per user with +/-',cls:'gs-bg-lightblue gs-small',span:12}],
+    [{text:'',span:12}],
+    [{text:'KPI Category',cls:'gs-bold gs-bg-gray'},{text:'KPI',cls:'gs-bold gs-bg-gray'},{text:'Default Target',cls:'gs-bold gs-bg-gray gs-center'},{text:'User 1',cls:'gs-bold gs-bg-gray gs-center'},{text:'User 2',cls:'gs-bold gs-bg-gray gs-center'},{text:'User 3',cls:'gs-bold gs-bg-gray gs-center'},{text:'User 4',cls:'gs-bold gs-bg-gray gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'CONTENT',cls:'gs-bold'},{text:'Posts per day'},{text:'2',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:'2',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'CONTENT',cls:'gs-bold'},{text:'Stories per day'},{text:'7',cls:'gs-center'},{text:'7',cls:'gs-center'},{text:'7',cls:'gs-center'},{text:'7',cls:'gs-center'},{text:'7',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'CONTENT',cls:'gs-bold'},{text:'Videos per day'},{text:'1',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:'1',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'COMMUNICATION',cls:'gs-bold'},{text:'Messages per day'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'COMMUNICATION',cls:'gs-bold'},{text:'Response Time (min)'},{text:'5',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:'5',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'COMMUNICATION',cls:'gs-bold'},{text:'Reply Rate',cls:''},{text:'100',cls:'gs-center'},{text:'100',cls:'gs-center'},{text:'100',cls:'gs-center'},{text:'100',cls:'gs-center'},{text:'100',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'LEADS',cls:'gs-bold'},{text:'New Leads per day'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:'15',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'LEADS',cls:'gs-bold'},{text:'Follow-ups per day'},{text:'25',cls:'gs-center'},{text:'25',cls:'gs-center'},{text:'25',cls:'gs-center'},{text:'25',cls:'gs-center'},{text:'25',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'MEETINGS',cls:'gs-bold'},{text:'Meetings per day'},{text:'4',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:'4',cls:'gs-center'},{text:''},{text:''},{text:''},{text:''},{text:''}],
+    [{text:'',span:12}],
+  ];
+}
+
 function renderSheet(rows, colWidths, startRow){
   const body = document.getElementById('sheetBody');
   body.innerHTML = '';
@@ -281,8 +336,9 @@ function hidePhase(){
 
 function switchTab(name){
   document.querySelectorAll('.gs-tab').forEach(t=>t.classList.remove('active'));
-  if(name==='dashboard') $('tabDash').classList.add('active');
-  else $('tabAdmin').classList.add('active');
+  const map = {dashboard:'tabDash',admin:'tabAdmin',user:'tabU1',social:'tabSoc',targets:'tabTgt'};
+  const tabEl = $(map[name]);
+  if(tabEl) tabEl.classList.add('active');
 }
 
 async function typeInCell(id, text, delay){
@@ -539,8 +595,54 @@ async function startDemo(){
   showPhase('Charts visualize your progress at a glance');
   buildChart(true);
 
+  await sleep(3000);
+  hidePhase();
+  await sleep(800);
+
+  // Phase 5: User Input tab
+  switchTab('user');
+  renderSheet(userInputData(), COL_W_USER, 1);
+  $('nameBox').textContent = 'A1';
+  showPhase('Each team member has their own input tab (User 1–4)');
   await sleep(3500);
   hidePhase();
+  await sleep(600);
+
+  // Phase 6: Social Metrics tab
+  switchTab('social');
+  renderSheet(socialMetricsData(), COL_W_SOCIAL, 1);
+  $('nameBox').textContent = 'A1';
+  showPhase('Social Metrics: track Facebook, Instagram, TikTok, YouTube, LINE per day');
+  await sleep(3500);
+  hidePhase();
+  await sleep(600);
+
+  // Phase 7: Targets tab
+  switchTab('targets');
+  renderSheet(targetsData(), COL_W_TARGETS, 1);
+  $('nameBox').textContent = 'A1';
+  showPhase('Targets: Admin sets KPI goals — customize per user');
+  await sleep(3500);
+  hidePhase();
+  await sleep(600);
+
+  // End: back to Dashboard
+  switchTab('dashboard');
+  renderSheet(dashData({
+    posts:'42',messages:'42',replies:'35',avgres:'15',
+    leads:'7',followups:'12',meetings:'3',deals:'1',dealval:'$5,000',
+    wleads:'31',wmeet:'12',wrate:'39%',
+    s_posts:'🟢',s_messages:'🟡',s_meetings:'🟡',
+    alertPosts:'✅ Posts OK',alertPostsOk:true,
+    alertLeads:'✅ Leads OK',alertLeadsOk:true,
+    alertFollow:'✅ Follow-ups OK',alertFollowOk:true,
+  }), COL_W, 1);
+  buildChart(true);
+  $('nameBox').textContent = 'A1';
+  showPhase('All data flows to one Dashboard — zero manual work');
+  await sleep(3500);
+  hidePhase();
+
   await sleep(500);
   $('replayBtn').classList.add('show');
 }
