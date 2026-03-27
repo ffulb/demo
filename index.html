@@ -83,6 +83,25 @@ body{font-family:'Google Sans',Roboto,Arial,sans-serif;background:#fff;overflow-
 .legend{display:flex;gap:10px;justify-content:center;margin-top:6px;}
 .legend span{font-size:9px;color:#5f6368;display:flex;align-items:center;gap:3px;}
 .legend i{width:8px;height:8px;border-radius:1px;display:inline-block;}
+
+/* Callout annotations */
+.callout{position:absolute;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;z-index:80;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.callout.show{opacity:1;transform:translateY(0);}
+.callout-green{background:#e6f4ea;color:#137333;border:1px solid #34a853;}
+.callout-yellow{background:#fef7e0;color:#e37400;border:1px solid #fbbc04;}
+.callout-blue{background:#e8f0fe;color:#1a73e8;border:1px solid #4285f4;}
+.callout-red{background:#fce8e6;color:#c5221f;border:1px solid #ea4335;}
+.callout::before{content:'';position:absolute;left:12px;top:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid;}
+.callout-green::before{border-bottom-color:#34a853;}
+.callout-yellow::before{border-bottom-color:#fbbc04;}
+.callout-blue::before{border-bottom-color:#4285f4;}
+.callout-red::before{border-bottom-color:#ea4335;}
+
+/* Highlight flash on cells */
+.gs-cell.flash-green{animation:flashG .8s ease-out;}
+.gs-cell.flash-yellow{animation:flashY .8s ease-out;}
+@keyframes flashG{0%{background:#b7e1cd}100%{background:transparent}}
+@keyframes flashY{0%{background:#fde293}100%{background:transparent}}
 </style>
 </head>
 <body>
@@ -298,6 +317,34 @@ function animateVal(id, target, prefix, suffix, duration){
   requestAnimationFrame(tick);
 }
 
+// ── Callouts ──
+function addCallout(anchorId, text, cls){
+  const anchor = $(anchorId);
+  if(!anchor) return;
+  // Remove any existing callout with same anchor
+  const existing = document.querySelector('.callout[data-anchor="'+anchorId+'"]');
+  if(existing) existing.remove();
+
+  const c = document.createElement('div');
+  c.className = 'callout ' + (cls||'callout-blue');
+  c.setAttribute('data-anchor', anchorId);
+  c.textContent = text;
+
+  const rect = anchor.getBoundingClientRect();
+  const bodyRect = $('sheetBody').getBoundingClientRect();
+  c.style.left = (rect.left - bodyRect.left) + 'px';
+  c.style.top = (rect.bottom - bodyRect.top + 8) + 'px';
+  $('sheetBody').appendChild(c);
+  requestAnimationFrame(()=> c.classList.add('show'));
+}
+
+function clearCallouts(){
+  document.querySelectorAll('.callout').forEach(c=>{
+    c.classList.remove('show');
+    setTimeout(()=>c.remove(), 400);
+  });
+}
+
 // ── Chart ──
 function buildChart(animated){
   // Remove old
@@ -424,6 +471,7 @@ async function startDemo(){
   await sleep(600);
 
   // Animate numbers counting up
+  showPhase('Numbers update automatically from your input...');
   const anims = [
     {id:'v-posts',val:42},{id:'v-messages',val:42},{id:'v-replies',val:35},{id:'v-avgres',val:15},
     {id:'v-leads',val:7},{id:'v-followups',val:12},{id:'v-meetings',val:3},{id:'v-deals',val:1},
@@ -434,7 +482,8 @@ async function startDemo(){
   animateVal('v-wrate', 39, '', '%', 1200);
 
   // Status changes after a beat
-  await sleep(700);
+  await sleep(1300);
+  hidePhase();
   const statusMap = {
     's-posts':'🟢','s-stories':'🔴','s-videos':'🔴','s-messages':'🟡','s-replies':'🔴',
     's-leads':'🔴','s-followups':'🔴','s-meetings':'🟡'
@@ -444,19 +493,55 @@ async function startDemo(){
     if(el) el.textContent = v;
   });
 
-  // Alerts
+  // Flash highlight on key cells + callouts
+  const postsCell = $('v-posts');
+  const postsStatus = $('s-posts');
+  if(postsCell) postsCell.classList.add('flash-green');
+  if(postsStatus) postsStatus.classList.add('flash-green');
+  addCallout('v-posts', '42 Posts — exceeded target of 10!', 'callout-green');
+  await sleep(1800);
+
+  const msgsCell = $('v-messages');
+  const msgsStatus = $('s-messages');
+  if(msgsCell) msgsCell.classList.add('flash-yellow');
+  if(msgsStatus) msgsStatus.classList.add('flash-yellow');
+  addCallout('v-messages', '42/75 Messages — on track (56%)', 'callout-yellow');
+  await sleep(1800);
+
+  const meetCell = $('v-meetings');
+  if(meetCell) meetCell.classList.add('flash-yellow');
+  addCallout('v-meetings', '3/20 Meetings — needs attention', 'callout-yellow');
+  await sleep(1800);
+
+  const dealCell = $('v-dealval');
+  addCallout('v-dealval', '$5,000 deal closed today!', 'callout-blue');
+  await sleep(2000);
+
+  // Clear callouts
+  clearCallouts();
   await sleep(400);
+
+  // Alerts section
+  showPhase('Alerts update: red flags clear automatically');
+  await sleep(800);
   const ap = $('a-posts');
   if(ap){ap.textContent='✅ Posts OK';ap.className='gs-cell gs-bg-green-alert';ap.style.width=(COL_W[1]+COL_W[2])+'px';}
+  await sleep(500);
   const al = $('a-leads');
   if(al){al.textContent='✅ Leads OK';al.className='gs-cell gs-bg-green-alert';al.style.width=(COL_W[1]+COL_W[2])+'px';}
+  await sleep(500);
   const af = $('a-follow');
   if(af){af.textContent='✅ Follow-ups OK';af.className='gs-cell gs-bg-green-alert';af.style.width=(COL_W[1]+COL_W[2])+'px';}
+  await sleep(1200);
+  hidePhase();
 
   // Chart
+  showPhase('Charts visualize your progress at a glance');
   buildChart(true);
 
-  await sleep(3000);
+  await sleep(3500);
+  hidePhase();
+  await sleep(500);
   $('replayBtn').classList.add('show');
 }
 
