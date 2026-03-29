@@ -471,7 +471,7 @@
             const rate = tipo === 'Urbano' ? rates.urbano : rates.rustico;
             const ibi = valor * rate;
 
-            document.getElementById('ibiValue').textContent = '€' + ibi.toFixed(2);
+            document.getElementById('ibiValue').textContent = '€' + Math.round(ibi).toLocaleString('es-ES');
             document.getElementById('ibiDetail').textContent =
                 ciudad + ' · ' + tipo + ' · Tipo impositivo: ' + (rate * 100).toFixed(4) + '%';
             resultEl.className = 'result-section show';
@@ -509,9 +509,9 @@
             const ganancia = venta - compra - gastos;
 
             if (ganancia <= 0) {
-                document.getElementById('gpValue').textContent = '€0.00';
+                document.getElementById('gpValue').textContent = '€0';
                 document.getElementById('gpDetail').textContent =
-                    'No hay ganancia patrimonial (resultado: €' + ganancia.toFixed(2) + ')';
+                    'No hay ganancia patrimonial (resultado: €' + Math.round(ganancia).toLocaleString('es-ES') + ')';
                 document.getElementById('gpBreakdown').innerHTML = '';
                 resultEl.className = 'result-section show';
                 return;
@@ -532,13 +532,13 @@
                 const hasta = tramo.hasta === Infinity ? '∞' : tramo.hasta.toLocaleString('es-ES');
                 breakdownHTML += '<div class="breakdown-row">' +
                     '<span class="tramo-label">' + desde + '–' + hasta + ' € (' + (tramo.tipo * 100) + '%)</span>' +
-                    '<span class="tramo-amount">€' + impTramo.toFixed(2) + '</span></div>';
+                    '<span class="tramo-amount">€' + Math.round(impTramo).toLocaleString('es-ES') + '</span></div>';
 
                 restante -= ancho;
                 anterior = tramo.hasta;
             }
 
-            document.getElementById('gpValue').textContent = '€' + impuesto.toFixed(2);
+            document.getElementById('gpValue').textContent = '€' + Math.round(impuesto).toLocaleString('es-ES');
             document.getElementById('gpDetail').textContent =
                 'Ganancia: €' + ganancia.toLocaleString('es-ES', {minimumFractionDigits: 2}) +
                 ' · Tipo efectivo: ' + ((impuesto / ganancia) * 100).toFixed(2) + '%';
